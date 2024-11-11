@@ -329,9 +329,12 @@ class Trainer:
                             f"{log_samples_path}/step_{global_step}_ref.wav", ref_audio.cpu(), target_sample_rate
                         )
                         with torch.inference_mode():
+                            print(text_inputs)
+                            print("====")
+                            print(text_inputs[0])
                             generated, _ = self.accelerator.unwrap_model(self.model).sample(
                                 cond=mel_spec[0][:ref_audio_len].unsqueeze(0),
-                                text=[text_inputs[0] + [" "] + text_inputs[0]],
+                                text=[text_inputs[0] + " " + text_inputs[0]],
                                 duration=ref_audio_len * 2,
                                 steps=nfe_step,
                                 cfg_strength=cfg_strength,

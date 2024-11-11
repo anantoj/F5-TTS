@@ -3,8 +3,10 @@ import torchaudio
 from datasets.arrow_writer import ArrowWriter
 import json
 import shutil
+import pandas as pd
+from tqdm import tqdm
 
-name_project = "" 
+name_project = "indo_f5" 
 ch_tokenizer = False
 
 path_data = "/home/ubuntu/F5-TTS/data"
@@ -15,6 +17,24 @@ file_metadata = os.path.join(path_project, "metadata.csv")
 file_raw = os.path.join(path_project, "raw.arrow")
 file_duration = os.path.join(path_project, "duration.json")
 file_vocab = os.path.join(path_project, "vocab.txt")
+
+
+file_vocab_finetune = os.path.join(path_data, "Emilia_ZH_EN_pinyin/vocab.txt")
+
+# Load the vocabulary from file_vocab_finetune
+with open(file_vocab_finetune, "r", encoding="utf-8-sig") as f:
+    vocab_set = set(f.read().splitlines())
+
+# Function to filter text based on the vocabulary
+def filter_text(text, vocab_set):
+    return ''.join([char if char in vocab_set else '' for char in text])
+
+# Load metadata and filter transcriptions
+metadata = pd.read_csv(file_metadata, sep="|", header=None, names=["audio", "transcription"])
+metadata["transcription"] = metadata["transcription"].apply(lambda x: filter_text(x, vocab_set))
+
+# Save the filtered metadata back to the file
+metadata.to_csv(file_metadata, sep="|", index=False, header=False)
 
 # if not os.path.isfile(file_metadata):
 #     return "The file was not found in " + file_metadata, ""
@@ -38,11 +58,11 @@ def get_correct_audio_path(
     # Case 2: If it has a supported extension but is not a full path
     elif has_supported_extension(audio_input) and not os.path.isabs(audio_input):
         file_audio = os.path.join(base_path, audio_input)
-        print("2")
+        # print("2")
 
     # Case 3: If only the name is given (no extension and not a full path)
     elif not has_supported_extension(audio_input) and not os.path.isabs(audio_input):
-        print("3")
+        # print("3")
         for ext in supported_formats:
             potential_file = os.path.join(base_path, f"{audio_input}.{ext}")
             if os.path.exists(potential_file):
@@ -75,11 +95,11 @@ text_list = []
 duration_list = []
 
 count = data.split("\n")
-lenght = 0
+length = 0
 result = []
 error_files = []
 text_vocab_set = set()
-for line in data.split("\n"):
+for line in tqdm(data.split("\n")):
     sp_line = line.split("|")
     if len(sp_line) != 2:
         continue
@@ -116,7 +136,7 @@ for line in data.split("\n"):
     if ch_tokenizer:
         text_vocab_set.update(list(text))
 
-    lenght += duration
+    length += duration
 
 # if duration_list == []:
 #     return f"Error: No audio files found in the specified path : {path_project_wavs}", ""
@@ -125,7 +145,7 @@ min_second = round(min(duration_list), 2)
 max_second = round(max(duration_list), 2)
 
 with ArrowWriter(path=file_raw, writer_batch_size=1) as writer:
-    for line in result:
+    for line in tqdm(result):
         writer.write(line)
 
 with open(file_duration, "w") as f:
@@ -158,6 +178,6 @@ else:
     error_text = ""
 
 print(
-    f"prepare complete \nsamples : {len(text_list)}\ntime data : {format_seconds_to_hms(lenght)}\nmin sec : {min_second}\nmax sec : {max_second}\nfile_arrow : {file_raw}\nvocab : {vocab_size}\n{error_text}",
+    f"prepare complete \nsamples : {len(text_list)}\ntime data : {format_seconds_to_hms(length)}\nmin sec : {min_second}\nmax sec : {max_second}\nfile_arrow : {file_raw}\nvocab : {vocab_size}\n{error_text}",
     new_vocal,
 )

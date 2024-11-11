@@ -1,1 +1,1 @@
-    
+python datasets/prepare_indo_f5.py

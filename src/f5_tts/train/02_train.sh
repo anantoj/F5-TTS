@@ -1,7 +1,7 @@
 
 
 python finetune_cli.py \
-    --dataset_name "my_speak_pinyin" \
+    --dataset_name "indo_f5" \
     --learning_rate 1e-5 \
     --batch_size_per_gpu 1000 \
     --batch_size_type "frame" \
@@ -13,7 +13,7 @@ python finetune_cli.py \
     --save_per_updates 1000  \
     --last_per_steps 4000 \
     --tokenizer "custom" \
-    --tokenizer_path "/home/ubuntu/F5-TTS/data/my_speak_pinyin/vocab.txt" \
+    --tokenizer_path "/home/ubuntu/F5-TTS/data/indo_f5/vocab.txt" \
     --logger "wandb" \
     --log_samples True \
 
