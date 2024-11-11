@@ -41,9 +41,9 @@ last_device = ""
 last_ema = None
 
 
-path_data = str(files("f5_tts").joinpath("../../data"))
-path_project_ckpts = str(files("f5_tts").joinpath("../../ckpts"))
-file_train = "src/f5_tts/train/finetune_cli.py"
+path_data = "/home/ubuntu/F5-TTS/data"
+path_project_ckpts = "/home/ubuntu/F5-TTS/ckpts"
+file_train = "/home/ubuntu/F5-TTS/src/f5_tts/train/finetune_cli.py"
 
 device = "cuda" if torch.cuda.is_available() else "mps" if torch.backends.mps.is_available() else "cpu"
 
