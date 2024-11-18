@@ -1,1 +1,1 @@
-python datasets/prepare_indo_f5.py
+python datasets/prepare_id_en_f5.py

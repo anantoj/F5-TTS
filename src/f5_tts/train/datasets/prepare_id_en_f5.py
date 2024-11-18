@@ -6,7 +6,7 @@ import shutil
 import pandas as pd
 from tqdm import tqdm
 
-name_project = "indo_f5" 
+name_project = "id-en-f5" 
 ch_tokenizer = False
 
 path_data = "/home/ubuntu/F5-TTS/data"
